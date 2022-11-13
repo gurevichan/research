@@ -134,7 +134,7 @@ def _print_train(silent, epoch, step, batch_size, dataset_length, loss):
               f'({100. * step * batch_size / dataset_length:.0f}%)]\tLoss: {loss.item():.6f}')
         
 
-def train_model(model, train_dataset, test_dataset, epochs=5, samples_per_epoch=10_000, test_max_samples=1000, log_interval=100,
+def train_model(model, train_dataset, test_dataset, epochs=5, samples_per_epoch=None, test_max_samples=None, log_interval=100,
                 batch_size=64, lr=0.0001):
     num_workers = 1
     optimizer = optim.Adam(model.parameters(), lr=lr)
@@ -146,7 +146,8 @@ def train_model(model, train_dataset, test_dataset, epochs=5, samples_per_epoch=
         start = time.time()
         train_epoch(model, train_dataloader, optimizer=optimizer, 
                     max_samples=samples_per_epoch, log_interval=log_interval, epoch=e, silent=True)
-        test(model, test_dataloader, max_samples=test_max_samples, header_str=f'Test; Epoch {e+1}, Step {(e+1)*samples_per_train_epoch} ({time.time() - start:.1f}s)')
+        test(model, test_dataloader, max_samples=test_max_samples, 
+             header_str=f'Test; Epoch {e+1}, Step {(e+1)*samples_per_train_epoch} ({time.time() - start:.1f}s)')
 
         
 def load_momo_dataset(data_path="/root/tal/repos/data-mining-research/data_mining_research/momo/data/"):
