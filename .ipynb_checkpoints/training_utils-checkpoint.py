@@ -10,6 +10,9 @@ from torch.utils.data import DataLoader
 import time
 
 
+ZFILL_LENGTH = 8
+
+
 class Metrics:
     def __init__(self):
         self.reset()
@@ -41,10 +44,12 @@ class Metrics:
         tpr_tnr_2 = (tpr + tnr) / 2
         return test_loss, tpr, tnr, acc, tpr_tnr_2
 
-    def print(self, header_str=''):
+    def print(self, header_str='', tnrs=False):
         test_loss, tpr, tnr, acc, tpr_tnr_2 = self.result()
-        print(f'{header_str}: Average loss: {test_loss:.4f}, Accuracy: {self.correct}/{self.count} ({100. * acc:.2f}%), ' + \
-              f'TPR: {100. * tpr:.2f}%, TNR: {100. * tnr:.2f}%, TNR+TPR/2: {100*((tpr+tnr)/2):.2f}%')
+        msg = f'{header_str.ljust(40)}: loss: {test_loss:.4f}, Accuracy: {self.correct}/{self.count} ({100. * acc:.2f}%)'
+        if tnrs:
+            msg += f'TPR: {100. * tpr:.2f}%, TNR: {100. * tnr:.2f}%, TNR+TPR/2: {100*((tpr+tnr)/2):.2f}%'
+        print(msg)
     
 
     
@@ -124,7 +129,8 @@ def train_epoch(model, train_dataloader, optimizer, max_samples=None, epoch=0, l
                          dataset_length=len(train_dataloader) if max_samples is None else max_samples,
                          loss=loss)
             break
-    msg = f'Train; Epoch {epoch+1}, Step {(epoch+1) * samples_per_train_epoch}'
+    msg = f'Train; Epoch {epoch+1}, Step ' \
+          f'{str((epoch+1) * samples_per_train_epoch * train_dataloader.batch_size).zfill(ZFILL_LENGTH)}'
     metrics.print(msg)
 
     
@@ -147,7 +153,8 @@ def train_model(model, train_dataset, test_dataset, epochs=5, samples_per_epoch=
         train_epoch(model, train_dataloader, optimizer=optimizer, 
                     max_samples=samples_per_epoch, log_interval=log_interval, epoch=e, silent=True)
         test(model, test_dataloader, max_samples=test_max_samples, 
-             header_str=f'Test; Epoch {e+1}, Step {(e+1)*samples_per_train_epoch} ({time.time() - start:.1f}s)')
+             header_str=f'Test;  Epoch {e+1}, Step {str((e+1)*samples_per_train_epoch).zfill(ZFILL_LENGTH)} ' \
+                        f'({time.time() - start:.1f}s)')
 
         
 def load_momo_dataset(data_path="/root/tal/repos/data-mining-research/data_mining_research/momo/data/"):
