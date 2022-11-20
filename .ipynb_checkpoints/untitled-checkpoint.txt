@@ -1,0 +1,18 @@
+python run_sidenet.py -nt side_net_group --limb_size 256
+python run_sidenet.py -nt side_net_group --limb_size 512
+python run_sidenet.py -nt side_net_group --limb_size 1024
+python run_sidenet.py -nt side_net --limb_size 256
+
+python run_sidenet.py -n resnet --finetune
+
+
+
+python run_sidenet.py -nt side_net_group --limb_size 32 --constant_block_size
+python run_sidenet.py -nt side_net_group --limb_size 64  --constant_block_size
+python run_sidenet.py -nt side_net_group --limb_size 128  --constant_block_size
+python run_sidenet.py -nt side_net_group --limb_size 256  --constant_block_size
+
+python run_sidenet.py -nt side_net --limb_size 32 --constant_block_size
+python run_sidenet.py -nt side_net --limb_size 64  --constant_block_size
+python run_sidenet.py -nt side_net --limb_size 128  --constant_block_size
+python run_sidenet.py -nt side_net --limb_size 256  --constant_block_size

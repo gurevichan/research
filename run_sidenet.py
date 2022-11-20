@@ -21,6 +21,8 @@ def parse():
     parser.add_argument('--data_len', type=int, default=None)
     parser.add_argument('-lr', '--learning_rate', type=float, default=0.0001)
     parser.add_argument('--debug', action="store_true")
+    parser.add_argument('--finetune', action="store_true")
+    parser.add_argument('--constant_block_size', action="store_true")
     
     args = parser.parse_args()
     if args.net_type == ['all']:
@@ -43,12 +45,16 @@ if __name__ == "__main__":
             resnet = resnet50(weights=ResNet50_Weights.IMAGENET1K_V1)
             resnet.fc = nn.Identity()
             if net == "resnet":
-                model = BBandFChead(resnet, hidden_dim=0, output_dim=101, train_bb=False) 
+                model = BBandFChead(resnet, hidden_dim=0, output_dim=101, train_bb=args.finetune) 
                 # creating a model with frozen bb and only a linear eval head.
             elif net == "side_net":
-                model = SideNet(resnet, num_classes=101, limb_size=args.limb_size).to(device)
+                model = SideNet(resnet, num_classes=101, limb_size=args.limb_size, 
+                                constant_block_size=args.constant_block_size,
+                                train_bb=args.finetune).to(device)
             elif net == "side_net_group":
-                model = SideNetGroups(resnet, num_classes=101, limb_size=args.limb_size).to(device)
+                model = SideNetGroups(resnet, num_classes=101, limb_size=args.limb_size,
+                                      constant_block_size=args.constant_block_size,
+                                      train_bb=args.finetune).to(device)
             print(f"*****Tuning {net}*****\n"*3)
             print(f'Total params: {sum(p.numel() for p in model.parameters()):,d}')
             print(model)

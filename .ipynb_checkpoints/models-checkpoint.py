@@ -34,7 +34,8 @@ class BBandFChead(nn.Module):
     
     
 class SideNet(nn.Module):
-    def __init__(self, bb_model, train_bb=False, limb_size=32, num_classes=101, verbose=False):
+    def __init__(self, bb_model, train_bb=False, limb_size=32, num_classes=101, verbose=False, 
+                 constant_block_size=False):
         super().__init__()
         self.train_bb = train_bb
         self.bb_model = bb_model
@@ -42,10 +43,16 @@ class SideNet(nn.Module):
         self.verbose = verbose
         resnet_blocks_output_shape = {"l1": 256, "l2": 512, "l3": 1024, "l4": 2048}
         mul = 2
-        my_blocks_output_shape = {"l1": limb_size,
-                                  "l2": int(limb_size * mul),
-                                  "l3": int(limb_size * 2 * mul),
-                                  "l4": int(limb_size * 4 * mul)}
+        if constant_block_size:
+            my_blocks_output_shape = {"l1": limb_size,
+                                      "l2": limb_size,
+                                      "l3": limb_size,
+                                      "l4": limb_size}
+        else:
+            my_blocks_output_shape = {"l1": limb_size,
+                          "l2": int(limb_size * mul),
+                          "l3": int(limb_size * 2 * mul),
+                          "l4": int(limb_size * 4 * mul)}
         my_blocks_input_shape = {"l1": resnet_blocks_output_shape['l1'], 
                                  "l2": resnet_blocks_output_shape["l2"] + my_blocks_output_shape["l1"], 
                                  "l3": resnet_blocks_output_shape["l3"] + my_blocks_output_shape["l2"], 
@@ -106,7 +113,8 @@ class SideNet(nn.Module):
     
     
 class SideNetGroups(nn.Module):
-    def __init__(self, bb_model, train_bb=False, limb_size=32, num_classes=101, verbose=False):
+    def __init__(self, bb_model, train_bb=False, limb_size=32, num_classes=101, verbose=False,
+                 constant_block_size=False):
         super().__init__()
         self.train_bb = train_bb
         self.bb_model = bb_model
@@ -114,14 +122,25 @@ class SideNetGroups(nn.Module):
         self.verbose = verbose
         resnet_blocks_output_shape = {"l1": 256, "l2": 512, "l3": 1024, "l4": 2048}
         mul = 2
-        my_blocks_output_shape = {"l1": limb_size,
-                                  "l2": int(limb_size * mul),
-                                  "l3": int(limb_size * 2 * mul),
-                                  "l4": int(limb_size * 4 * mul)}
+
+        if constant_block_size:
+            my_blocks_output_shape = {"l1": limb_size,
+                                      "l2": limb_size,
+                                      "l3": limb_size,
+                                      "l4": limb_size}
+        else:
+            my_blocks_output_shape = {"l1": limb_size,
+                          "l2": int(limb_size * mul),
+                          "l3": int(limb_size * 2 * mul),
+                          "l4": int(limb_size * 4 * mul)}
+                
         my_blocks_input_shape = {"l1": resnet_blocks_output_shape['l1'], 
                                  "l2": 2 * my_blocks_output_shape["l1"], 
                                  "l3": 2 * my_blocks_output_shape["l2"], 
                                  "l4": 2 * my_blocks_output_shape["l3"]}
+        
+        
+        
         self.l2_conv = nn.Conv2d(in_channels=resnet_blocks_output_shape['l2'], 
                                  out_channels=my_blocks_output_shape["l1"], kernel_size=1, stride=1, padding=0, groups=8, bias=False)
         self.l3_conv = nn.Conv2d(in_channels=resnet_blocks_output_shape['l3'], 
@@ -176,6 +195,7 @@ class SideNetGroups(nn.Module):
         if self.verbose:
             print(f'l3: in={l3.shape}, my={x.shape}, next={l4.shape}') 
         x = torch.concat((x, l4), dim=CHANNELS_DIM)
+        x = self.l4_layers(x)
         x = self.avgpool(x)
         x_finetuning = self.flatten(x)
         if self.verbose:

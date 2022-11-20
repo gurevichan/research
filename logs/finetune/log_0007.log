@@ -1,12 +1,12 @@
-Namespace(batch_size=16, data_len=None, debug=False, epochs=10, learning_rate=0.0001, limb_size=32, net_type=['resnet'])
+Namespace(batch_size=16, data_len=None, debug=False, epochs=10, learning_rate=0.0001, limb_size=32, net_type=['side_net_group'])
 Files already downloaded and verified
 6941 1736
-*****Tuning resnet*****
-*****Tuning resnet*****
-*****Tuning resnet*****
+*****Tuning side_net_group*****
+*****Tuning side_net_group*****
+*****Tuning side_net_group*****
 
-Total params: 23,714,981
-BBandFChead(
+Total params: 24,616,293
+SideNetGroups(
   (bb_model): ResNet(
     (conv1): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
     (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
@@ -183,9 +183,33 @@ BBandFChead(
     (avgpool): AdaptiveAvgPool2d(output_size=(1, 1))
     (fc): Identity()
   )
+  (l2_conv): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1), groups=8, bias=False)
+  (l3_conv): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1), groups=8, bias=False)
+  (l4_conv): Conv2d(2048, 128, kernel_size=(1, 1), stride=(1, 1), groups=16, bias=False)
+  (l1_layers): Sequential(
+    (0): Conv2d(256, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU()
+  )
+  (l2_layers): Sequential(
+    (0): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU()
+  )
+  (l3_layers): Sequential(
+    (0): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU()
+  )
+  (l4_layers): Sequential(
+    (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU()
+  )
+  (avgpool): AdaptiveAvgPool2d(output_size=(1, 1))
   (flatten): Flatten(start_dim=1, end_dim=-1)
-  (linear_relu_stack): Linear(in_features=2048, out_features=101, bias=True)
+  (fc): Linear(in_features=2304, out_features=101, bias=True)
 )
-Train; Epoch 1, Step 00006941           : loss: 0.1905, Accuracy: 2661/6941 (38.34%)Test;  Epoch 1, Step 00006941 (19.9s)   : loss: 1.9024, Accuracy: 1166/1736 (67.17%)Train; Epoch 2, Step 00013869           : loss: 0.0983, Accuracy: 5399/6941 (77.78%)Test;  Epoch 2, Step 00013882 (18.1s)   : loss: 1.0703, Accuracy: 1466/1736 (84.45%)Train; Epoch 3, Step 00020797           : loss: 0.0604, Accuracy: 6165/6941 (88.82%)Test;  Epoch 3, Step 00020823 (18.2s)   : loss: 0.7167, Accuracy: 1549/1736 (89.23%)Train; Epoch 4, Step 00027725           : loss: 0.0420, Accuracy: 6426/6941 (92.58%)Test;  Epoch 4, Step 00027764 (17.7s)   : loss: 0.5428, Accuracy: 1590/1736 (91.59%)Train; Epoch 5, Step 00034653           : loss: 0.0317, Accuracy: 6549/6941 (94.35%)Test;  Epoch 5, Step 00034705 (16.9s)   : loss: 0.4448, Accuracy: 1605/1736 (92.45%)Train; Epoch 6, Step 00041581           : loss: 0.0252, Accuracy: 6621/6941 (95.39%)Test;  Epoch 6, Step 00041646 (16.8s)   : loss: 0.3834, Accuracy: 1612/1736 (92.86%)Train; Epoch 7, Step 00048509           : loss: 0.0208, Accuracy: 6679/6941 (96.23%)Test;  Epoch 7, Step 00048587 (17.0s)   : loss: 0.3419, Accuracy: 1624/1736 (93.55%)Train; Epoch 8, Step 00055437           : loss: 0.0176, Accuracy: 6714/6941 (96.73%)Test;  Epoch 8, Step 00055528 (16.8s)   : loss: 0.3121, Accuracy: 1631/1736 (93.95%)Train; Epoch 9, Step 00062365           : loss: 0.0151, Accuracy: 6754/6941 (97.31%)Test;  Epoch 9, Step 00062469 (17.0s)   : loss: 0.2899, Accuracy: 1636/1736 (94.24%)Train; Epoch 10, Step 00069293          : loss: 0.0131, Accuracy: 6783/6941 (97.72%)Test;  Epoch 10, Step 00069410 (16.9s)  : loss: 0.2728, Accuracy: 1634/1736 (94.12%)
-Best accuracy of 94.24 achieved at epoch 8
+Train; Epoch 1, Step 00006941           : loss: 0.1789, Accuracy: 3050/6941 (43.94%)Test;  Epoch 1, Step 00006941 (20.2s)   : loss: 1.6868, Accuracy: 1249/1736 (71.95%)Train; Epoch 2, Step 00013869           : loss: 0.0864, Accuracy: 5699/6941 (82.11%)Test;  Epoch 2, Step 00013882 (18.2s)   : loss: 0.9003, Accuracy: 1511/1736 (87.04%)Train; Epoch 3, Step 00020797           : loss: 0.0505, Accuracy: 6337/6941 (91.30%)Test;  Epoch 3, Step 00020823 (17.3s)   : loss: 0.5867, Accuracy: 1587/1736 (91.42%)Train; Epoch 4, Step 00027725           : loss: 0.0339, Accuracy: 6525/6941 (94.01%)Test;  Epoch 4, Step 00027764 (17.4s)   : loss: 0.4407, Accuracy: 1613/1736 (92.91%)Train; Epoch 5, Step 00034653           : loss: 0.0249, Accuracy: 6630/6941 (95.52%)Test;  Epoch 5, Step 00034705 (17.2s)   : loss: 0.3612, Accuracy: 1624/1736 (93.55%)Train; Epoch 6, Step 00041581           : loss: 0.0193, Accuracy: 6704/6941 (96.59%)Test;  Epoch 6, Step 00041646 (17.4s)   : loss: 0.3127, Accuracy: 1629/1736 (93.84%)Train; Epoch 7, Step 00048509           : loss: 0.0154, Accuracy: 6749/6941 (97.23%)Test;  Epoch 7, Step 00048587 (17.3s)   : loss: 0.2807, Accuracy: 1631/1736 (93.95%)Train; Epoch 8, Step 00055437           : loss: 0.0126, Accuracy: 6789/6941 (97.81%)Test;  Epoch 8, Step 00055528 (17.2s)   : loss: 0.2586, Accuracy: 1632/1736 (94.01%)Train; Epoch 9, Step 00062365           : loss: 0.0104, Accuracy: 6825/6941 (98.33%)Test;  Epoch 9, Step 00062469 (17.7s)   : loss: 0.2427, Accuracy: 1634/1736 (94.12%)Train; Epoch 10, Step 00069293          : loss: 0.0086, Accuracy: 6850/6941 (98.69%)Test;  Epoch 10, Step 00069410 (16.9s)  : loss: 0.2312, Accuracy: 1636/1736 (94.24%)
+Best accuracy of 94.24 achieved at epoch 9
 done
