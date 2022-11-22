@@ -30,4 +30,4 @@ python run_sidenet.py -nt side_net --limb_size 128 -e 15
 python run_sidenet.py -nt side_net_group --limb_size 64 -e 15
 python run_sidenet.py -nt side_net_group --limb_size 128 -e 15
 
-
+mamba install wandb ipdb pytorch-lightning==1.8.1 hydra-core numpy==1.21.0 -y 
